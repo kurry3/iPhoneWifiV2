@@ -1,141 +1,102 @@
-package test.java.IPhoneWifi;
-
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+package iOSWifi3;
 
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.testng.annotations.*;
+import org.testng.annotations.Test;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
-//import org.testng.annotations.*;
-import org.junit.jupiter.api.*;
-import org.junit.runner.RunWith;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-//import org.openqa.selenium.WebDriver;
-//import org.openqa.selenium.Point;
-//import org.openqa.selenium.interactions.internal.TouchAction;
-//import org.openqa.selenium.remote.RemoteWebDriver;
-//import org.openqa.selenium.support.ui.ExpectedConditions;
-//import org.openqa.selenium.support.ui.WebDriverWait;
-import io.appium.java_client.AppiumDriver;
+//import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
-//import io.appium.java_client.ios.*;
 import io.appium.java_client.ios.IOSDriver;
-//import io.appium.java_client.touch.WaitOptions;
-//import io.appium.java_client.ios.IOSElement;
-//import io.appium.java_client.touch.ActionOptions;
-//import io.appium.java_client.touch.offset.*;
+
 import io.appium.java_client.TouchAction;
 
-public class IPhoneWifi{
+public class AppiumParallelTest implements Runnable{
 	
-	
-	
-	private static AppiumDriver<MobileElement> driver;
-	
-	@BeforeAll
-	public static void ixchariotLaunch() throws Exception {
-		System.setProperty("webdriver.http.factory", "apache");
-		DesiredCapabilities cap = new DesiredCapabilities();
-		cap.setCapability("platformName", "iOS");
-		cap.setCapability("platformVersion", "11.3");
-		//cap.setCapability("platformVersion", driver.getCapabilities().getCapability("platformVersion"));
-		//cap.setCapability("deviceName",driver.getCapabilities().getCapability("deviceName"));
-		cap.setCapability("deviceName", "RF's iPhone");
-		cap.setCapability("automationName", "XCUITest");
-		cap.setCapability("udid", "f2164f6fed275ba15386c7eebc99b2926ad398c6");
-		//cap.setCapability("udid", driver.getCapabilities().getCapability("udid"));
-		cap.setCapability("bundleId", "com.yourcompany.Endpoint");
-		
-		try {
-			driver = new IOSDriver<MobileElement>(new URL("http://0.0.0.0:4727/wd/hub"),cap);
-		}catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		//driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-		System.out.println("Appium Session Started");
-	}
-	
-    @SuppressWarnings("rawtypes")
-	@Test
-    void myFirstTest() {
-		System.out.println("Test Started");
-		
-		Dimension d = driver.manage().window().getSize();
-		int height = d.getHeight();
-		int width = d.getWidth();
-		System.out.println(height);
-		System.out.println(width);
+	 String url;
+	 String udid;
+	 String deviceName;
+	 String devicePort;
+	   
+	    public AppiumParallelTest(String url, String udid, String deviceName, String devicePort) {
+	        this.url = url;
+	        this.udid = udid;
+	        this.deviceName = deviceName;
+	        this.devicePort = devicePort;
+	    }
+	   
+	    IOSDriver<MobileElement> driver;
+	    DesiredCapabilities cap = new DesiredCapabilities();
+	   
+	   
+	    private void controlCenter() {
+			cap.setCapability("platformName", "iOS");
+			cap.setCapability("platformVersion", "11.3");
+			cap.setCapability("deviceName", deviceName);
+			cap.setCapability("automationName", "XCUITest");
+			cap.setCapability("udid", udid);
+			cap.setCapability("bundleId", "com.yourcompany.Endpoint");
+			//cap.setCapability("useNewWDA", true);
+			cap.setCapability("wdaLocalPort", devicePort);
+	       
+	        try {
+	            driver = new IOSDriver<MobileElement>(new URL(url), cap);
+	            Thread.sleep(10000);
+	        } catch (MalformedURLException e) {
+	            e.printStackTrace();
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
+	       
+	        System.out.println(url + " Test Started");
+			//System.out.println(tldriver.get().manage());
+			Dimension d = driver.manage().window().getSize();
+			int height = d.getHeight();
+			int width = d.getWidth();
+			System.out.println(height);
+			System.out.println(width);
 
-		/*JavascriptExecutor js = (JavascriptExecutor) driver;
-		HashMap<String, Object> swipeObj = new HashMap<>();
-		swipeObj.put("fromY", height);
-		swipeObj.put("fromX", width/2);
-		swipeObj.put("toX", width/2);
-		swipeObj.put("toY", -height);
-		swipeObj.put("duration", 0.5);
-		js.executeScript("mobile:dragFromToForDuration", swipeObj);
-		HashMap<String,Object> params = new HashMap<>();
-		params.put("direction", "up");
-		js.executeScript("mobile:swipe", params);
-		HashMap<String,Object> scrollParams = new HashMap<>();
-		
-		
-		scrollParams.put("direction","down");
-		js.executeScript("mobile:scroll", scrollParams);*/
-		
-		TouchAction touchAction = new TouchAction(driver);
-		touchAction.press(width/2, height).waitAction(Duration.ofMillis(500)).moveTo(width/2, -height).release().perform();
+			TouchAction touchAction = new TouchAction(driver);
+			touchAction.press(width/2, height).waitAction(Duration.ofMillis(500)).moveTo(width/2, -height).release().perform();
 
-		try {
-			Thread.sleep(2*1000);
-		}catch(InterruptedException e){
-			e.printStackTrace();
-		}
-		
-		/* if (driver.getInstance()findElement(By.id("WiFi")).isEnabled()){
-		 * 	click("WiFi", Attribute.NAME);
-		 * }
-		 * else {
-		 * 	click("WiFi", Attribute.NAME);
-		 * }
-		 * 
-		 * */
-		
-		int count = 0;
-		/*do {
-			count = count + 1;
-			System.out.println(count);
-			driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
-			
-		}while (count <= 10);*/
-		do {
-			driver.findElementByAccessibilityId("wifi-button").click();
-			count = count + 1;
-			//touchAction.waitAction(WaitOptions.waitOptions(Duration.ofMillis(5*1000)));
 			try {
-				Thread.sleep(4900);
+				Thread.sleep(2*1000);
 			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
-		}while (count <= 5);
-		
-		
-    }
-   
-	@AfterAll
-	public static void tearDown() throws Exception{
-		/*try {
-			Thread.sleep(10*1000);
-		}catch(InterruptedException e) {
-			e.printStackTrace();
-		}*/
-		driver.quit();
+
+			int count = 0;
+
+			do {
+				driver.findElementByAccessibilityId("wifi-button").click();
+				count = count + 1;
+				try {
+					Thread.sleep(6000);
+				}catch(InterruptedException e){
+					e.printStackTrace();
+				}
+				System.out.println(count);
+			}while (count <= 5);
+			System.out.println(deviceName + " Test Complete" );
+			driver.quit();
+	    }
+	   
+	    public static void main(String args[]) {
+	    	Runnable r1 = new AppiumParallelTest("http://127.0.0.1:3001/wd/hub", "0a1364a47e9b044d605558130817ad53a9b5208c", "RF's iPhone7", "8300"); //device id of first mobile device
+	        System.out.println("iPhone7 Instance Created" );
+	        Runnable r2 = new AppiumParallelTest("http://127.0.0.1:3005/wd/hub", "f2164f6fed275ba15386c7eebc99b2926ad398c6", "RF's iPhone", "8200"); //device id of second mobile device
+	        System.out.println("iPhone8 Instance Created");
+	        new Thread(r1).start();
+	        new Thread(r2).start();
+	    }
+	 
+	    @Override
+	    public void run() {
+	        controlCenter();
+	    }
 	}
 
-}
